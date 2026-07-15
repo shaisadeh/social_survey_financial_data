@@ -323,17 +323,9 @@ As part of the complete project, the notebook `models4Mid_GMM_pip_2_1_forData_Qu
 Rather than repeating the computationally expensive hyperparameter search, it uses the hyperparameter values selected by the full notebook,
 allowing the modeling pipeline to execute in a fraction of the time and making it suitable for interactive use.
 
-It is important to emphasize that the Quick notebook is intended to reproduce the workflow of the full notebook,
-rather than to guarantee that exactly the same model will always be selected. As will be shown in the following sections,
-the candidate models achieve very similar performance with respect to the primary evaluation metric (F1-score). In addition,
-many of the evaluated models make extensive use of randomization during training. Since these random elements are not necessarily
-reproduced across independent executions, repeated runs may produce slightly different evaluation scores. Consequently,
-the model identified as the best-performing model in one execution of the full notebook may differ from the model selected
-in another execution, even though their performance is nearly identical.
-
 Finally, it should be emphasized that the purpose of the full notebook extends beyond identifying the best-performing 
-model or determining the hyperparameter regions that yield optimal performance. The extensive hyperparameter search i
-s also intended to ensure a fair comparison among the different candidate models by evaluating each model under its best-performing configuration.
+model or determining the hyperparameter regions that yield optimal performance. The extensive hyperparameter search is 
+also intended to ensure a fair comparison among the different candidate models by evaluating each model under its best-performing configuration.
 Furthermore, it provides the basis for assessing the impact of the GMM-based feature generation stage by comparing the performance
 of each optimized model with and without the GMM features.
 
