@@ -166,17 +166,6 @@ jupyter notebook
 
 ---
 
-# Repository Structure
-
-| Folder | Description |
-|---------|-------------|
-| notebooks | Data cleaning, EDA, feature engineering, modeling |
-| data | Raw and processed datasets |
-| dashboard | Interactive dashboard |
-| README.md | Project documentation |
-
----
-
 # License
 
 This project was developed for academic purposes.
