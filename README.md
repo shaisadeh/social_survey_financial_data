@@ -1,4 +1,4 @@
-# Predicting Financial Vulnerability among Older Adults in Israel
+# Predicting Financial Vulnerability in Israel
 
 ## Team Members
 -    Or Arbeli
