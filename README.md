@@ -90,7 +90,7 @@ Three supervised learning algorithms were compared:
 
 - Logistic Regression
 - Random Forest
-- XGBoost
+- Gradient Boosting
 
 Performance was evaluated using:
 
@@ -106,7 +106,7 @@ Performance was evaluated using:
 
 The models successfully identified financially vulnerable individuals.
 
-Among the evaluated models, **XGBoost achieved the best overall predictive performance**, outperforming Logistic Regression and Random Forest.
+Among the evaluated models, **Gradient Boosting achieved the best overall predictive performance**, outperforming Logistic Regression and Random Forest.
 
 Model interpretation techniques were used to identify the most influential predictors contributing to financial vulnerability.
 
@@ -130,7 +130,7 @@ The project includes an interactive dashboard for exploring:
 - Pandas
 - NumPy
 - Scikit-learn
-- XGBoost
+- Gradient Boosting
 - Matplotlib
 - Seaborn
 - Plotly
