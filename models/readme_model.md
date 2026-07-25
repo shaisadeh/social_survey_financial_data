@@ -304,7 +304,13 @@ The analysis considers the complete feature representation provided to the
 classifier, including processed original features and generated GMM-based
 features when applicable.
 
-## 8. Results
+## 8. Confidence-Weighted SHAP Error Analysis
+
+This analysis provides an interpretable investigation of model errors by combining directional SHAP feature selection with feature distribution analysis and prediction confidence evaluation. In the first stage, SHAP values are examined separately for False Positive (FP) and False Negative (FN) samples. Only SHAP contributions acting in the direction of the classification error are considered, allowing identification of the features that most strongly contribute to incorrect model decisions. For each error category, features are ranked according to their average directional SHAP contribution, and the three features with the highest Error Score are selected for further investigation.
+
+In the second stage, the selected features are visualized through distribution comparisons designed according to the error type. False Positive analysis compares the distribution of the selected features between training samples belonging to Class 0, correctly classified negative samples (TN), and incorrectly classified positive predictions (FP). False Negative analysis compares the distribution of the selected features between training samples belonging to Class 1, correctly classified positive samples (TP), and incorrectly classified negative predictions (FN). In addition to feature distributions, the plots include the model decision confidence for the test groups. The decision confidence is calculated according to the relative distance between the predicted probability and the classification threshold used by the model. For positive predictions, confidence increases as the predicted probability moves further above the threshold, while for negative predictions, confidence increases as the probability moves further below the threshold. The resulting value is scaled to a range between zero and one, where values close to zero indicate predictions near the decision boundary and values close to one indicate predictions made with stronger separation from the threshold. This enables evaluation of whether classification errors occur due to ambiguous cases near the decision boundary or whether the model produces incorrect decisions despite high confidence.
+
+## 9. Results
 
 Before presenting the results, it is important to note that two versions of the model notebook are included:
 
@@ -329,7 +335,7 @@ also intended to ensure a fair comparison among the different candidate models b
 Furthermore, it provides the basis for assessing the impact of the GMM-based feature generation stage by comparing the performance
 of each optimized model with and without the GMM features.
 
-## 8.1 Comparative Evaluation Results of the Different Models
+## 9.1 Comparative Evaluation Results of the Different Models
 
 We now proceed to the summary of the model evaluation results obtained after completing the optimization and evaluation
 process described in Sections 2 and 3.
@@ -392,7 +398,7 @@ correlations between the different feature dimensions within each GMM component 
 of GMM features was found to be marginal, the selected covariance structure appears to have a limited influence on the final model performance compared with the 
 choice of classifier and the overall modeling pipeline.
 
-## 8.2 Class-Level Performance Analysis of the Selected Model
+## 9.2 Class-Level Performance Analysis of the Selected Model
 
 As part of Section 4 of the implementation, a class-level performance analysis was conducted for the selected model:
 
@@ -427,7 +433,7 @@ The class-level analysis shows a significant difference in performance between t
 This class distribution is also reflected in the selected classification threshold. Since the threshold was optimized according to the F1-score, the selected value 
 of 0.3, lower than the default value of 0.5, suggests that a shifted decision boundary provided a more suitable Precision–Recall trade-off for the evaluated dataset.
 
-# 8.3 Hyperparameter Sensitivity Analysis of the Selected Model
+# 9.3 Hyperparameter Sensitivity Analysis of the Selected Model
 
 The following section presents the sensitivity analysis results obtained in Section 5 of the implementation for the selected Gradient Boosting Classifier. 
 The effect of varying the main hyperparameters on model performance is evaluated using Accuracy, Recall, and F1-score:
@@ -458,12 +464,13 @@ to a gradual decrease in F1-score. In contrast, Accuracy improves as the thresho
 decrease with increasing threshold values. These results demonstrate the trade-off between the different evaluation metrics and support the selection of the threshold according 
 to the F1-score optimization criterion.
 
-## 8.4 Confusion Matrix, ROC Curve, and Precision-Recall Curve (Fig.5)
-The ROC analysis resulted in a ROC-AUC value of 0.7914, indicating that the model demonstrates a reasonable discriminative capability between the two classes based on the predicted
- probability scores. The Precision-Recall analysis yielded an Average Precision value of 0.5489, providing an evaluation of the model’s ability to identify positive-class instances
-while accounting for the existing class imbalance.
+## 9.4 Confusion Matrix, ROC Curve, and Precision-Recall Curve (Fig.5)
+The ROC analysis yielded a ROC-AUC score of 0.7914, indicating that the classifier demonstrates a moderate discriminative capability between the positive and negative classes across different decision thresholds. Specifically, the model has an estimated 79.1% probability of assigning a higher prediction score to a randomly selected positive instance than to a randomly selected negative instance. However, because the dataset is imbalanced, with the positive class representing 22.9% of the samples and the negative class representing 77.1%, the ROC curve should be interpreted with caution. Since the False Positive Rate (FPR) is calculated relative to the large proportion of negative samples, the ROC-AUC may remain relatively high even when the model produces a considerable number of false-positive predictions. Therefore, although ROC-AUC indicates a reasonable level of class separation, it may provide an optimistic estimation of the model’s performance on the minority class.
 
-## 8.5 SHAP-Based Feature Contribution Analysis (Fig. 6-7)
+The Precision–Recall (PR) curve provides a more reliable evaluation under these imbalanced conditions. The obtained Average Precision (AP) of 0.5489 indicates moderate performance in identifying positive-class instances while accounting for the trade-off between precision and recall. This measure is particularly relevant because the model was optimized according to the F1-score, which balances precision and recall. Since F1-score optimization emphasizes both the detection of positive instances and the reduction of false-positive predictions, the PR curve and its derived AP value provide a more representative evaluation than ROC-AUC in this scenario. Accordingly, although the ROC-AUC of 0.7914 suggests moderate class separability, the AP of 0.5489 provides a more realistic assessment of the model’s effectiveness in detecting the minority class under the existing class imbalance.
+
+The confusion matrix indicates that the model correctly classified 888 instances of class 0 and 187 instances of class 1. However, it also produced 177 false-positive predictions and 130 false-negative predictions, reflecting the challenge of accurately identifying the minority class. These results are consistent with the moderate Precision–Recall performance and highlight the trade-off between detecting positive instances and limiting classification errors under imbalanced class conditions.
+## 9.5 SHAP-Based Feature Contribution Analysis (Fig. 6-7)
 
 For HashkaotBank, high feature values show a strong contribution toward class 0 predictions, with the SHAP value distribution centered around approximately -0.5. Low feature values show a strong contribution toward class 1 predictions, with the distribution centered around approximately 0.6. The contribution pattern is relatively symmetric between the two classes.
 
@@ -479,6 +486,34 @@ Overall, the SHAP analysis indicates that HashkaotBank is the most influential f
 For class 0 predictions, the main contributions are associated with higher values of HashkaotBank, ShokelKniot, and HashkaotShukHon, which show negative SHAP contributions.
 For class 1 predictions, lower values of HashkaotBank, together with HeshbonotBazman, provide the main positive contributions.
 
+## 9.6 Confidence-Weighted SHAP Error Analysis
 
+The following results present the features with the highest directional contribution to model errors for False Positive (FP) and False Negative (FN) predictions. The Error Score represents the average magnitude of the SHAP contribution in the direction associated with the classification error, while Error Count indicates the number of error samples in which the feature contributed in that direction.
 
+================================
+Top FP Error Features
+================================
+                 Error_Score  Error_Count
+HashkaotBank        0.615864          177
+HeshbonotBazman     0.558811          177
+LoHosech            0.304911          177
 
+================================
+Top FN Error Features
+================================
+                 Error_Score  Error_Count
+HashkaotBank        0.522893          130
+HashkaotShukHon     0.492759          130
+Gil                 0.358911          130
+
+The results highlight the features that most strongly influence incorrect model decisions for each error type. HashkaotBank appears among the leading error-related features in both FP and FN groups, suggesting that this feature has a substantial influence on the model decision process and requires further examination through the subsequent distribution and confidence analysis.
+
+From the presented distribution and confidence plots (Fig. 8-9), the following observations can be made regarding patterns that may be related to the observed classification errors. These observations should be interpreted as possible explanations based on the observed feature distributions and confidence levels, rather than as definitive causes of the model behavior. The analysis focuses on the features identified by the directional SHAP analysis as having the highest contribution to each error type. For False Positive errors, the selected features ranked by their influence are HashkaotBank, HeshbonotBazman, and LoHosech. For False Negative errors, the selected features are HashkaotBank, HashkaotShukHon, and Gil.
+
+For False Positive (FP) errors (Fig. 8), the comparison between FP samples, correctly classified negative samples (TN), and the Class 0 training distribution shows that FP samples are concentrated in specific feature-value regions. In HashkaotBank, the highest-ranked FP feature, FP samples are almost entirely associated with value 0, although this value represents a smaller portion of the Class 0 training distribution compared with value 1. This indicates that the FP cases are concentrated in a specific feature region rather than following the dominant Class 0 pattern. In HeshbonotBazman, the second-ranked feature, FP samples appear mainly at values 1–5, with a particularly high concentration at value 1, which is also frequently represented in the Class 0 training data and TN samples. In LoHosech, the third-ranked feature, FP samples are distributed across several values, with higher representation at values 1 and 5. These observations suggest that FP errors occur in specific feature regions with different levels of representation within the negative class, rather than being associated exclusively with either rare or dominant Class 0 patterns. The decision confidence of FP predictions is generally lower than that of TN predictions in the corresponding feature regions, indicating that incorrect positive decisions are often made with lower classifier certainty compared with correctly classified negative samples.
+
+For False Negative (FN) errors (Fig. 9), the comparison between FN samples, correctly classified positive samples (TP), and the Class 1 training distribution reveals a different pattern. The selected features according to their SHAP-based influence ranking are HashkaotBank, HashkaotShukHon, and Gil. In HashkaotBank, the highest-ranked FN feature, FN samples are concentrated mainly at value 1, furthermore this value has a smaller representation in the Class 1 training distribution compared with value 0. In this region, FN predictions show substantially higher decision confidence than TP predictions, indicating that some incorrect negative decisions are made with relatively high classifier certainty. A similar pattern appears in HashkaotShukHon, the second-ranked FN feature, where FN samples are more frequent at value 0, which is also the dominant value in the Class 1 training distribution, while FN predictions show higher confidence than TP predictions for this value. In Gil, the third-ranked FN feature, FN samples are distributed across multiple feature values without a single dominant error region. Unlike the previous features, the Class 1 training distribution of Gil contains a relatively balanced representation across many values, with a moderate number of training examples for each value. Despite this broader representation, FN errors still occur across several values, suggesting that these errors cannot be explained only by limited positive-class representation in the training data. The confidence patterns indicate that some of these errors occur with similar or higher confidence compared with correctly classified positive samples.
+
+A notable difference between the two error types is the observed relationship between feature representation and decision confidence. FP errors generally appear with lower confidence than TN predictions, whereas FN errors often include cases with higher confidence than the corresponding TP predictions. This difference suggests that the model does not exhibit identical error behavior for the two classes. The different training distributions of Class 0 and Class 1, together with the observed confidence patterns, may contribute to the different characteristics of FP and FN errors. In particular, the influential features identified by SHAP show different relationships between feature representation and confidence depending on the error type. However, the plots alone do not allow determining the exact mechanism responsible for these differences.
+
+Overall, the SHAP-based ranking highlights HashkaotBank as the most influential feature for both FP and FN errors, while the remaining influential features differ between the two error types. The distribution and confidence analysis of these selected features suggests that classification errors are concentrated in specific feature regions where the representation of training samples and the decision confidence differ between correctly classified and misclassified groups. These observations provide possible insights into the model behavior and highlight feature regions that may require further investigation. However, they remain descriptive findings and should be considered as hypotheses derived from the visual analysis rather than confirmed explanations of the classification errors.
